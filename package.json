@@ -1,0 +1,72 @@
+{
+  "name": "dsh-plugin-auto-retry",
+  "version": "0.1.0",
+  "description": "DeepSeek Harness plugin that takes over a model-request failure the built-in retry executor declined, continuing its backoff curve, and surfaces the full failure detail the transcript discards.",
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "cordis",
+    "auto-retry",
+    "retry",
+    "request-error",
+    "agent"
+  ],
+  "license": "MIT",
+  "author": "Rina",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aqiu817/dsh-plugin-auto-retry.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aqiu817/dsh-plugin-auto-retry/issues"
+  },
+  "homepage": "https://github.com/aqiu817/dsh-plugin-auto-retry#readme",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/",
+    "client.js",
+    "cordis.patch.yml",
+    "README.md",
+    "README.en.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test --test-isolation=none \"test/**/*.test.mjs\"",
+    "prepublishOnly": "npm test"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-api-session-controller",
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-plugin-manager",
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-client-ui-settings"
+      ]
+    }
+  },
+  "dependencies": {
+    "@deepseek-ai/schemastery": "^3.18.4"
+  }
+}

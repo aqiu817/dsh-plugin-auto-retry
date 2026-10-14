@@ -1,0 +1,12 @@
+node_modules/
+
+# npm noise: debug logs, and the tarball a local `npm pack` leaves behind.
+npm-debug.log*
+*.log
+*.tgz
+
+# Editor and OS droppings.
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

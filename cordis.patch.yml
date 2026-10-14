@@ -1,0 +1,51 @@
+# Take over a model-request failure the harness's own retry executor declined.
+#
+# `@deepseek-ai/dsh-base` mounts `@deepseek-ai/dsh-llm-retry`, which retries a
+# fixed set of failure codes inside a bounded budget and calls its waterfall's
+# `next()` whenever it declines. This plugin sits downstream of it, so it sees
+# exactly those declined failures and can never duplicate one already handled.
+#
+# `extraRetries` is the field to watch: it is the budget on top of whatever the
+# official executor already spent, not a total. `0` keeps the plugin installed
+# but inert, which is the safe way to try it out.
+#
+# `retryableCodes` is where a deployment opts into the ambiguous codes. QUOTA,
+# ACCOUNT_QUOTA, INVALID_REQUEST, and UNKNOWN are deliberately absent from the
+# default list: each is as likely to be permanent as transient, so the choice
+# belongs to whoever knows their routes. AUTH, MISSING_CREDENTIAL,
+# INVALID_CREDENTIAL, NO_ADAPTER, INVALID_MODEL, INVALID_CONFIG,
+# CONTEXT_WINDOW_EXCEEDED, IMAGE_OFFLOAD_REQUIRED, and ABORTED cannot be enabled
+# at all — they are a hard floor in the policy, and an allowlist typo cannot
+# unlock them.
+#
+# Do not set `retryableCodes: []` here either: `readSettings()` reads an empty
+# list as a typo and falls back to the defaults, because the alternative is a
+# mistyped configuration that silently switches the plugin off while the settings
+# page still shows it on. `extraRetries: 0` is how a deployment says "take over
+# nothing".
+#
+# The row's `id` is also the settings namespace: this bundle's browser half reads
+# it back as `CONFIG_NAMESPACE` to build the configuration page on the bundle's own
+# page. Renaming the id means renaming that constant with it, or the page renders
+# empty. A contract test cross-checks the two.
+#
+# Every field is `.volatile()` in the plugin's Config schema, so the Plugins
+# page edits them without reloading this fiber.
+
+- insert:
+    - id: auto-retry
+      name: 'dsh-plugin-auto-retry'
+      config:
+        enabled: true
+        extraRetries: 3
+        initialDelayMs: 1000
+        maxDelayMs: 60000
+        jitterRatio: 0.2
+        retryableCodes:
+          - EMPTY_RESPONSE
+          - RATE_LIMIT
+          - SERVER
+          - TIMEOUT
+          - TRANSPORT
+          - PROVIDER_ERROR
+          - PI_AI_ERROR

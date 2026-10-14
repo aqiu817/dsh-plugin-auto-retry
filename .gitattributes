@@ -1,0 +1,13 @@
+# Normalise every text file to LF, in the repository and in the working tree.
+# Without this a Windows checkout (core.autocrlf=true) rewrites the sources to
+# CRLF, which shows up as whole-file diffs for contributors on other platforms
+# and would also leak CRLF into the published npm tarball.
+* text=auto eol=lf
+
+# Binary assets are never touched.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.tgz binary

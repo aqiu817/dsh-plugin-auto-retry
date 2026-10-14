@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Read-only: the tests never write to the repository or publish anything.
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      # A plugin runs against whatever Harness the profile composed, so the only
+      # dependency to install is the schema library the Host half imports. `ci`
+      # rather than `install` so the committed lockfile is what actually gets
+      # tested and a drifting range cannot pass unnoticed.
+      - run: npm ci
+
+      - run: npm test
+
+  # The published tarball is what users install, and it is built from `files`
+  # rather than from the working tree: a package that passes every test locally
+  # can still ship without its entry point. `contract.test.mjs` checks that each
+  # `files` entry exists on disk; this checks that npm actually picks it up.
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Pack and check what npm would publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm pack --json > pack.json
+          node -e '
+            const [tarball] = require("./pack.json");
+            const actual = tarball.files.map((file) => file.path);
+            const required = ["lib/index.js", "lib/policy.js", "client.js", "cordis.patch.yml", "package.json"];
+            const missing = required.filter((path) => !actual.includes(path));
+            const leaked = actual.filter((path) => path.startsWith("test/") || path.startsWith("node_modules/"));
+            if (missing.length > 0 || leaked.length > 0) {
+              console.error("missing:", missing, "leaked:", leaked);
+              process.exit(1);
+            }
+            console.log(`tarball carries ${actual.length} files`);
+          '
