@@ -8,6 +8,8 @@ DeepSeek Harness 宿主侧插件。它挂在官方 `@deepseek-ai/dsh-llm-retry` 
 
 没有客户端注入的伪造消息，不替换也不改动任何官方插件。
 
+[![CI](https://github.com/aqiu817/dsh-plugin-auto-retry/actions/workflows/ci.yml/badge.svg)](https://github.com/aqiu817/dsh-plugin-auto-retry/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/dsh-plugin-auto-retry)](https://www.npmjs.com/package/dsh-plugin-auto-retry)
 [![license](https://img.shields.io/badge/license-MIT-blue)](#license)
 ![node](https://img.shields.io/badge/node-%3E%3D22-informational)
 
