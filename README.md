@@ -11,6 +11,8 @@ DeepSeek Harness 宿主侧插件。它挂在官方 `@deepseek-ai/dsh-llm-retry` 
 [![license](https://img.shields.io/badge/license-MIT-blue)](#license)
 ![node](https://img.shields.io/badge/node-%3E%3D22-informational)
 
+<img width="701" height="325" alt="image" src="https://github.com/user-attachments/assets/88ab836f-8b19-40f4-83e9-2559914f49b8" />
+
 ---
 
 ## 目录
