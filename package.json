@@ -42,7 +42,8 @@
     "node": ">=22"
   },
   "scripts": {
-    "test": "node --test --test-isolation=none \"test/**/*.test.mjs\"",
+    "test": "node --test \"test/**/*.test.mjs\"",
+    "test:in-process": "node --test --test-isolation=none \"test/**/*.test.mjs\"",
     "prepublishOnly": "npm test"
   },
   "publishConfig": {

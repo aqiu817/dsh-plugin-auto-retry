@@ -412,9 +412,13 @@ directory, so it skips elsewhere (`DSH_APP_ASAR` points it at another install).
 > shape that only the mock accepts surfaces in a browser as a configuration area
 > that never appears at all.
 
-> The `test` script carries `--test-isolation=none` because the DSH file sandbox
-> forbids `child_process.spawn`, which `node --test` needs for per-file child
-> processes. Plain `node --test` works elsewhere.
+> `npm test` is `node --test "test/**/*.test.mjs"` — the same command CI and
+> `prepublishOnly` run. `--test-isolation=none` (`npm run test:in-process`) is an
+> escape hatch for a **sandbox that forbids child processes**: `node --test` spawns
+> one per test file by default, which the DSH file sandbox does not allow. That
+> flag needs Node 24+, so it is not the default — a package declaring
+> `engines: >=22` would otherwise die with `bad option` on the version it claims
+> to support.
 
 ## Known limitations
 

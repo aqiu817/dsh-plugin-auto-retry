@@ -407,7 +407,7 @@ npm test
 
 > `test/slots.test.mjs` 直接读安装目录里的 `app.asar`，所以它在别的机器上会跳过（`DSH_APP_ASAR` 可以指向别的安装）。这么做是因为「mock 接受」和「真实注册表接受」是两个问题：一个只有 mock 通过、注册表拒绝的形状，在浏览器里表现为配置区根本不出现。
 
-> `test` 脚本带 `--test-isolation=none`，因为 DSH 的文件沙箱禁止 `child_process.spawn`，而 `node --test` 默认要给每个测试文件起子进程。在普通环境里用 `node --test` 也能跑。
+> `npm test` 就是 `node --test "test/**/*.test.mjs"`，和 CI、`prepublishOnly` 用的是同一条命令。`--test-isolation=none`（`npm run test:in-process`）是给**禁止子进程的沙箱**准备的逃生口——`node --test` 默认要给每个测试文件起子进程，而 DSH 自己的文件沙箱不允许；这个 flag 需要 Node 24+，所以它不在默认命令里，否则声明 `engines: >=22` 的包会在 Node 22 上直接报 `bad option`。
 
 ## 已知限制
 

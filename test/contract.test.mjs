@@ -303,7 +303,21 @@ test('the package manifest points at files that exist', () => {
   for (const file of pkg.files ?? []) {
     assert.equal(existsSync(resolve(pkgRoot, file)), true, `package.json lists a missing ${file}`);
   }
-  assert.equal(pkg.scripts.test, 'node --test --test-isolation=none "test/**/*.test.mjs"');
+});
+
+test('the test commands stay inside the Node version the manifest requires', () => {
+  // `npm test` is what CI runs and what `prepublishOnly` gates a release on, so it
+  // may not use a flag newer than `engines.node`. `--test-isolation` arrived in
+  // Node 24 while this package declares >=22, and shipping it in the default
+  // command is how a green local run turns into a red CI run on the floor it
+  // claims to support.
+  assert.equal(pkg.scripts.test, 'node --test "test/**/*.test.mjs"');
+  assert.equal(pkg.scripts.test.includes('--test-isolation'), false);
+  assert.equal(pkg.scripts.prepublishOnly, 'npm test');
+
+  // The in-process variant is the escape hatch for a sandbox that forbids the
+  // child processes the default isolation needs; it is allowed to be newer.
+  assert.equal(pkg.scripts['test:in-process'], 'node --test --test-isolation=none "test/**/*.test.mjs"');
 });
 
 test('the bundle patch inserts the row the manifest names', () => {
